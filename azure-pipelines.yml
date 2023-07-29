@@ -1,0 +1,28 @@
+trigger:
+  - main
+
+resources:
+  - repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+  - stage: Build
+    displayName: Build image
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: Docker@2
+            displayName: Build an image
+            inputs:
+              command: build
+              dockerfile: '$(Build.SourcesDirectory)/practica11/Dockerfile'
+              tags: |
+                $(tag)
+
+          - script: docker-compose -f $(Build.SourcesDirectory)/practica11/docker-compose.yml up -d
+            displayName: Run Docker Compose
